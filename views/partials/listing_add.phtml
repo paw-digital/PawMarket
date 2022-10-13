@@ -1,0 +1,84 @@
+<?
+	$PAW_PRICE_USD = \Paw\Price::getPriceUSD($this->getDb());
+?>
+<style type="text/css">
+    button {
+        border: 1px solid #1dcaca;
+        background: #1dde9c;
+        color: #fff;
+        cursor: pointer;
+        margin: 0 0 5px 0;
+    }
+	button.btn.btn-success {
+		padding: 1px 1px;
+	}
+	.description
+	{
+		width: 100%;
+	}
+</style>
+
+<div class="main_box">
+	<div class="inner_main_box">
+		<h2>Create Listing</h2><br />
+		<? if(!$this->user): ?>
+			You need to login before you can create a listing.
+		<? elseif(!\Paw\Helper::hasContactDetails($this->user)): ?>
+			Before creating a listing please <a href="/edit_profile?id=<?= $this->user->id ?>">set your contact details</a>.
+		<? else: ?>
+			<form enctype="multipart/form-data" action="/add_listing_submit" method="POST">
+				<div class="form-group">
+					<label for="image">Image of item:</label><br />
+					<input name="uploaded" type="file" >
+				</div>
+				<div class="form-group">
+					<label for="type">Type</label><br />
+					<select name="type">
+						<option value="0" <?= isset($_POST['type']) && $_POST['type'] == '0' ? ' selected="selected"' : ''; ?>>Selling</option>
+						<option value="1" <?= isset($_POST['type']) && $_POST['type'] == '1' ? ' selected="selected"' : ''; ?>>Buying</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="price_usd">Price in USD</label><br />
+					<input id="price_usd" name="price_usd" placeholder="5.00" type="text" value="<?= isset($_POST['price_usd']) ? htmlspecialchars($_POST['price_usd']) : ''; ?>" />
+				</div>
+				<div class="form-group">
+					<label for="price_paw">Price in PAW</label><br />
+					<input id="price_paw" name="price_paw" placeholder="10,000,000" type="text" value="<?= isset($_POST['price_paw']) ? htmlspecialchars($_POST['price_paw']) : ''; ?>" />
+				</div>
+				<div class="form-group">
+					<label for="title">Title</label><br />
+					<input name="title" placeholder="Item " type="text" value="<?= isset($_POST['title']) ? htmlspecialchars($_POST['title']) : ''; ?>" />
+				</div>
+				<div class="form-group">
+					<label for="body">Description</label><br />
+					<textarea name="body" class="description"><?= isset($_POST['body']) ? htmlspecialchars($_POST['body']) : ''; ?></textarea>
+				</div>
+				<input type="hidden" name="_token"  value="<?php echo $_SESSION['_token']; ?>" />
+				<? /*
+				<pre style="height: 100px;">
+		Terms..
+
+		-
+				</pre>
+				<input type="checkbox" name="terms" <?= isset($_POST['terms']) ?'checked="checked"' : '' ?>></input> I agree too the terms*/ ?>
+				<br /><br /><button type="submit" class="btn btn-main">Create listing</button>
+			</form>
+			<script type="text/javascript">
+				var paw_price_usd = <?= $PAW_PRICE_USD ?>;
+				var load_after = function(){
+					$('#price_usd').change(function(){
+						var price = $('#price_usd').val();
+						$('#price_paw').val(Math.floor(price/paw_price_usd));
+					});
+					$('#price_paw').change(function(){
+						var price = $('#price_paw').val().replace(/,/g, '');
+						$('#price_usd').val(Math.floor(price*paw_price_usd*100)/100);
+					});
+				}
+			</script>
+				
+			<div style="color: #19adb3; font-weight: bold;" id="error_message"><?php echo $err ? '<span>'.$err.'</span>' : ''; ?></div>
+		<? endif; ?>
+	</div>
+</div>

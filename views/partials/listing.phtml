@@ -1,0 +1,74 @@
+<style type="text/css">
+    #listing_image {
+		float: left;
+		width: 200px;
+		margin-right: 15px;
+    }
+	#contact_details
+	{
+		float: right;
+		border: 1px solid #aaa;
+		border-radius: 5px;
+		background: #fff;
+		padding: 5px 10px;
+	}
+	#contact_details_header
+	{
+		border-bottom: 1px solid #eee;
+		font-weight: bold;
+		font-size: 0.8em;
+		text-align: center;
+		margin-bottom: 10px;
+	}
+</style>
+
+<div class="main_box">
+	<div class="inner_main_box">
+		<?
+			$PAW_PRICE_USD = \Paw\Price::getPriceUSD($this->getDb());
+			$price = '';
+			if($LISTING->price_usd)
+			{
+				$price = number_format(floor(($LISTING->price_usd / $PAW_PRICE_USD)), 0, '', ','). ' PAW <span class="usd_price">($'.htmlspecialchars($LISTING->price_usd).')</span>';
+			}
+			else								
+			{
+				$price = number_format(htmlspecialchars($LISTING->price_paw), 0, '', ','). ' PAW <span class="usd_price">(~$'.htmlspecialchars(floor($LISTING->price_paw * $PAW_PRICE_USD*100)/100).')</span>';
+			}
+		?>
+		<h3><div class="listing_type <?= $LISTING->type == '0' ? 'selling' : 'buying' ?>"><?= $LISTING->type == '0' ? 'SELLING' : 'BUYING' ?></div> <?= $LISTING->title; ?> <?= $price ?></h3><br />
+		<div id="contact_details">
+			<div id="contact_details_header">Contact</div>
+			<? if(!empty($LISTING_USER->email)): ?>
+				<div>
+					Email: <?= htmlspecialchars($LISTING_USER->email); ?>
+				</div>
+			<? endif; ?>
+			<? if(!empty($LISTING_USER->telegram)): ?>
+				<div>
+					Telegram: <a href="https://t.me/<?= htmlspecialchars($LISTING_USER->telegram); ?>"><?= htmlspecialchars($LISTING_USER->telegram); ?></a>
+				</div>
+			<? endif; ?>
+			<? if(!empty($LISTING_USER->discord)): ?>
+				<div>
+					Discord: <?= htmlspecialchars($LISTING_USER->discord); ?>
+				</div>
+			<? endif; ?>
+		</div>
+		<? if(!empty($LISTING->image_path)): ?>
+			<a href="uploads/<?= $LISTING->image_path ?>" target="_blank"><img id="listing_image" src="uploads/<?= $LISTING->image_path ?>" style=""></img></a>
+		<? endif; ?>
+		<div><?= $LISTING->body ?></div>
+		<div style="border-top: 1px solid #eee; padding-top: 5px; margin-top: 10px; ">posted 
+			<?
+				$timeAgo = new Westsworld\TimeAgo();
+				echo $timeAgo->inWordsFromStrings(date("Y-m-d H:i:s", $LISTING->time_created));
+			?>
+		</div>
+		<div style="clear: both;"></div>
+		<? if($this->user && $this->user->id === $LISTING->account_id): ?>
+			<a href="/edit_listing?id=<?= $LISTING->id ?>" class="btn btn-main" style="margin-top: 20px;">Edit Listing</a>
+			<a href="/delete_listing?id=<?= $LISTING->id ?>" class="btn btn-warning" style="margin-top: 20px;">Delete Listing</a>
+		<? endif; ?>
+	</div>
+</div>

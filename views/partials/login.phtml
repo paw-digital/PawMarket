@@ -1,0 +1,38 @@
+	<?
+	
+		function rand_sha1($length)
+		{
+			$max = ceil($length / 40);
+			$random = '';
+			for ($i = 0; $i < $max; $i ++) {
+				$random .= sha1(microtime(true).mt_rand(10000,90000));
+			}
+			return substr($random, 0, $length);
+		}
+		
+		$node = new \Paw\Node\Client();
+		$new_account = $node->newAuthAccount();
+		$hash = rand_sha1(64);
+		$this->getDb()->qr_insert_auth($new_account['account'], $new_account['private_key'], $hash);
+		
+	?>
+<div class="main_box">
+	<div class="inner_main_box">
+		<h2>Login</h2>
+		<style type="text/css">
+			.qr_image img, .qr_image canvas{
+				margin: 5px auto;
+			}
+		</style>
+		<div style="margin: auto; text-align: center; ">
+			<div class="text_padding">Send 1 PAW to this address within the next 10 minutes</div>
+			<div class="qr_image" id="qr_account"></div>
+			<pre><?= $new_account['account'] ?></pre>
+		</div>
+		<script type="text/javascript">
+			var qr_auth_hash = '<?= $hash ?>';
+			var uri = "paw:<?= $new_account['account'] ?>";
+			new QRCode(document.getElementById("qr_account"), {text: uri, width:230, height:230, colorDark: '#333', colorLight: '#fff'});
+		</script>
+	</div>
+</div>

@@ -1,0 +1,96 @@
+<?
+	$PAW_PRICE_USD = \Paw\Price::getPriceUSD($this->getDb());
+?>
+<style type="text/css">
+	#listings
+	{
+		min-width:600px;
+	}
+	#listings tr td
+	{
+		height: 30px;
+	}
+	.usd_price
+	{
+		font-size: 0.8em;
+	}
+	.address_label
+	{
+		background: #ddd;
+		border: 1px sold #eee;
+		padding: 5px 10px;
+		font-size: 0.8em;
+		border-radius: 4px;
+	}
+	#msg
+	{
+		color: #3af;
+		font-weight: bold;
+		border: 1px solid #ddd;
+		background: #eee;
+		margin-bottom: 20px;
+		padding: 0 10px;
+	}
+</style>
+
+<div class="main_box">
+	<div class="inner_main_box">
+		<h2>Listings</h2>
+		<? if(isset($_GET['msg'])): ?>
+			<div id="msg">
+			<? if($_GET['msg'] == 'ldeleted'): ?>
+				Listing deleted..
+			<? endif; ?>
+			</div>
+		<? endif; ?>
+		<div style="text-align: right;"><a href="/add_listing" class="btn btn-main">New Listing</a></div>
+		<div id="listings_container">
+			<table id="listings" style="width: 100%;">
+				<tr>
+					<td></td>
+					<td>Type</td>
+					<td>Title</td>
+					<td>Price</td>
+					<td><span class="usd_price">USD equivalent</span></td>
+					<td></td>
+					<td>User</td>
+				</tr>
+				<? if($LISTINGS): ?>
+					<? foreach($LISTINGS as $listing){ ?>
+						<tr>
+							<td width="50px" style="max-height: 30px;"><? if(!empty($listing['image_path'])) { ?><img src="uploads/<?= $listing['image_path'] ?>" style="max-height: 30px; max-width: 30px; " /><? } ?></td>
+							<td><div class="listing_type <?= $listing['type'] == '0' ? 'selling' : 'buying' ?>"><?= $listing['type'] == '0' ? 'SELLING' : 'BUYING' ?></div></td>
+							<td><a href="/listing?id=<?= $listing['id'] ?>"><?= htmlspecialchars($listing['title']) ?></a></td>
+							<td>
+								<?
+									$price = '';
+									if($listing['price_usd'])
+									{
+										$price = number_format(floor(($listing['price_usd'] / $PAW_PRICE_USD)), 0, '', ','). ' PAW';
+										$price_usd = '<span class="usd_price">$'.htmlspecialchars($listing['price_usd']).'</span>';
+									}
+									else								
+									{
+										$price = number_format(htmlspecialchars($listing['price_paw']), 0, '', ','). ' PAW';
+										$price_usd = '<span class="usd_price">$'.htmlspecialchars(floor($listing['price_paw'] * $PAW_PRICE_USD*100)/100).'</span>';
+									}
+								?>
+								<?= $price ?>
+							</td>
+							<td align="center">
+								<?= $price_usd ?>
+							</td>
+							<td>
+								<?
+									$timeAgo = new Westsworld\TimeAgo();
+									echo $timeAgo->inWordsFromStrings(date("Y-m-d H:i:s", $listing['time_created']));
+								?>
+							</td>
+							<td><div class="address_label"><?= substr($listing['paw_address'], 0, 10) ?>..</div></td>
+						</tr>
+					<? } ?>
+				<? endif; ?>
+			</table>
+		</div>
+	</div>
+</div>

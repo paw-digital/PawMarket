@@ -1,0 +1,33 @@
+<div class="main_box">
+	<div class="inner_main_box">
+		<h2>Profile</h2><br />
+		<? if(!$USER): ?>
+			No user found..
+		<? else: ?>
+			<div style="padding: 5px 10px; margin-bottom: 15px; background: #eee; border-radius: 4px; border: 1px solid #ddd;">
+				<?= $USER->paw_address; ?>
+			</div>
+			<div id="contact_details">
+				<? if(!empty($USER->email)): ?>
+					<div>
+						Email: <?= htmlspecialchars($USER->email); ?>
+					</div>
+				<? endif; ?>
+				<? if(!empty($USER->telegram)): ?>
+					<div>
+						Telegram: <a href="https://t.me/<?= htmlspecialchars($USER->telegram); ?>"><?= htmlspecialchars($USER->telegram); ?></a>
+					</div>
+				<? endif; ?>
+				<? if(!empty($USER->discord)): ?>
+					<div>
+						Discord: <?= htmlspecialchars($USER->discord); ?>
+					</div>
+				<? endif; ?>
+			</div>
+			<div style="clear: both;"></div>
+			<? if($this->user && $this->user->id === $USER->id): ?>
+				<a href="/edit_profile?id=<?= $USER->id ?>" class="btn btn-main" style="margin-top: 20px;">Edit Profile</a>
+			<? endif; ?>
+		<? endif; ?>
+	</div>
+</div>

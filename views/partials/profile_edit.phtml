@@ -1,0 +1,57 @@
+<style type="text/css">
+    button {
+        border: 1px solid #1dcaca;
+        background: #1dde9c;
+        color: #fff;
+        cursor: pointer;
+        margin: 0 0 5px 0;
+    }
+	button.btn.btn-success {
+		padding: 1px 1px;
+	}
+	.description
+	{
+		width: 100%;
+	}
+</style>
+<?
+	function fill_field($name, $default_values)
+	{
+		$default_values = (array)($default_values);
+		
+		if(isset($_POST[$name]))
+			return htmlspecialchars($_POST[$name]);
+		else if(isset($default_values[$name]))
+			return htmlspecialchars($default_values[$name]);
+		
+		return '';
+	} 
+?>
+<div class="main_box">
+	<div class="inner_main_box">
+		<? if($this->user && $this->user->id === $USER->id): ?>
+			<h2>Edit Profile</h2><br />
+			<form enctype="multipart/form-data" action="/edit_profile_submit?id=<?= $USER->id ?>" method="POST">
+				<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-bottom: 10px;">Please set at least one contact field others can reach you at</div>
+				<div class="form-group">
+					<label for="email">Email</label><br />
+					<input name="email" placeholder="myemail@address.com" type="text" value="<?= fill_field('email', $USER) ?>" />
+				</div>
+				<div class="form-group">
+					<label for="telegram">Telegram</label><br />
+					<input name="telegram" placeholder="TelegramUser" type="text" value="<?= fill_field('telegram', $USER) ?>" />
+				</div>
+				<div class="form-group">
+					<label for="discord">Discord</label><br />
+					<input name="discord" placeholder="DiscordUser#2134" type="text" value="<?= fill_field('discord', $USER) ?>" />
+				</div>
+				<input type="hidden" name="_token"  value="<?php echo $_SESSION['_token']; ?>" />
+				<br /><button type="submit" class="btn btn-main">Edit Profile</button>
+			</form>
+				
+			<div style="color: #19adb3; font-weight: bold;" id="error_message"><?php echo $err ? '<span>'.$err.'</span>' : ''; ?></div>
+		<? else: ?>
+			Error..
+		<? endif; ?>
+	</div>
+</div>
